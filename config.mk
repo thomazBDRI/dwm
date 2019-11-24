@@ -5,7 +5,7 @@ VERSION = 6.2
 
 # paths
 PREFIX =  ${USERBIN}
-MANPREFIX = ${PREFIX}/share/man
+MANPREFIX = ${USERMAN}/share/man
 
 X11INC = /usr/include/X11
 X11LIB = /usr/lib/X11
