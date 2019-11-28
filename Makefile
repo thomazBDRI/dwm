@@ -38,7 +38,7 @@ dist: clean
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}
-	cp -f dwm ${DESTDIR}${PREFIX}
+	cp -f dwm dwmc ${DESTDIR}${PREFIX}
 	chmod 755 ${DESTDIR}${PREFIX}/dwm
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
