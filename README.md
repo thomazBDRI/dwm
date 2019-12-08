@@ -14,6 +14,7 @@ Patches applied
 - [centeredmaster](https://dwm.suckless.org/patches/centeredmaster/)
 - [pertag](https://dwm.suckless.org/patches/pertag/)
 - [fakefullscreen](https://dwm.suckless.org/patches/fakefullscreen/)
+- [focusonctive](https://dwm.suckless.org/patches/focusonnetactive/)
 
 
 Personal Patches
