@@ -224,6 +224,7 @@ static void tagmon(const Arg *arg);
 static void tile(Monitor *);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
+static void togglescratch(const Arg *arg, const char *name);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
@@ -302,6 +303,8 @@ struct Pertag {
 	Bool showbars[LENGTH(tags) + 1]; /* display bar for the current tag */
 	Client *prevzooms[LENGTH(tags) + 1]; /* store zoom information */
 };
+
+static unsigned int scratchtag = 1 << LENGTH(tags);
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
@@ -1062,37 +1065,23 @@ fake_signal(void)
 	// Get root name property
 	if (gettextprop(root, XA_WM_NAME, fsignal, sizeof(fsignal))) {
 		len_fsignal = strlen(fsignal);
-    fputs("Received Signal: ", stderr);
-    fputs(fsignal, stderr);
-    fputs("\n", stderr);
 
 		// Check if this is indeed a fake signal
 		if (len_indicator > len_fsignal ? 0 : strncmp(indicator, fsignal, len_indicator) == 0) {
 			paramn = sscanf(fsignal+len_indicator, "%s%n%s%n", str_sig, &len_str_sig, param, &n);
 
-      fprintf(stderr, "before arg.i: %i\n", arg.i);
-      fprintf(stderr, "before arg.ui: %u\n", arg.ui);
-      fprintf(stderr, "before arg.f: %f\n", arg.f);
-
 			if (paramn == 1) arg = (Arg) {0};
 			else if (paramn > 2) return 1;
 			else if (strncmp(param, "i", n - len_str_sig) == 0) {
-        fputs("Setting arg.i\n", stderr);
 				sscanf(fsignal + len_indicator + n, "%i", &(arg.i));
       }
 			else if (strncmp(param, "ui", n - len_str_sig) == 0) {
-        fputs("Setting arg.ui\n", stderr);
 				sscanf(fsignal + len_indicator + n, "%u", &(arg.ui));
       }
 			else if (strncmp(param, "f", n - len_str_sig) == 0) {
-        fputs("Setting arg.f\n", stderr);
 				sscanf(fsignal + len_indicator + n, "%f", &(arg.f));
       }
 			else return 1;
-
-      fprintf(stderr, "arg.i: %i\n", arg.i);
-      fprintf(stderr, "arg.ui: %u\n", arg.ui);
-      fprintf(stderr, "arg.f: %f\n", arg.f);
 
 			// Check if a signal was found, and if so handle it
 			for (i = 0; i < LENGTH(signals); i++)
@@ -1130,6 +1119,7 @@ manage(Window w, XWindowAttributes *wa)
 	Client *c, *t = NULL;
 	Window trans = None;
 	XWindowChanges wc;
+  int i;
 
 	c = ecalloc(1, sizeof(Client));
 	c->win = w;
@@ -1158,6 +1148,16 @@ manage(Window w, XWindowAttributes *wa)
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
 	c->bw = borderpx;
+
+  selmon->tagset[selmon->seltags] &= ~scratchtag;
+  for (i = 0; floatnames[i] != NULL; i++) {
+    if (!strcmp(c->name, floatnames[i])) {
+      c->mon->tagset[c->mon->seltags] |= c->tags = scratchtag;
+      c->isfloating = True;
+      c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
+      c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
+    }
+  }
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -1749,6 +1749,9 @@ spawn(const Arg *arg)
 {
 	if (arg->v == dmenucmd)
 		dmenumon[0] = '0' + selmon->num;
+
+  selmon->tagset[selmon->seltags] &= ~scratchtag;
+
 	if (fork() == 0) {
 		if (dpy)
 			close(ConnectionNumber(dpy));
@@ -1953,6 +1956,34 @@ togglefloating(const Arg *arg)
 		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
 			selmon->sel->w, selmon->sel->h, 0);
 	arrange(selmon);
+}
+
+void
+togglescratch(const Arg *arg, const char *name)
+{
+  Client *c;
+  unsigned int found = 1;
+  unsigned int showing = 0;
+
+  for (c = selmon->clients; c && (found = strcmp(c->name, name)); c = c->next);
+  if (!found) {
+    showing = c->tags ^ scratchtag;
+    if (!showing) {
+      // hide it
+      fprintf(stderr, "hiding\n");
+
+      c->tags = scratchtag & TAGMASK;
+      focus(NULL);
+      arrange(selmon);
+    } else {
+      fprintf(stderr, "displaying\n");
+      c->tags = c->mon->tagset[c->mon->seltags];
+
+      //focus(c);
+      restack(selmon);
+    }
+  } else
+    spawn(arg);
 }
 
 void

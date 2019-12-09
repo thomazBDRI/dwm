@@ -7,7 +7,7 @@ signal() {
 case $# in
 1)
 	case $1 in
-	setlayout | tagall | view | viewall | togglebar | togglefloating | zoom | killclient | quit)
+	tgflterm | tgflcalc | setlayout | togglest | tagall | view | viewall | togglebar | togglefloating | zoom | killclient | quit)
 		signal $1
 		;;
 	*)
@@ -34,7 +34,7 @@ case $# in
 	esac
 	;;
 *)
-	echo "Too many arguments."
-	exit 1
+  echo "Too many arguments."
+  exit 1
 	;;
 esac

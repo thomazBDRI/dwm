@@ -68,6 +68,9 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
+static const char *floatnames[] = { "flterm", "flcalc", NULL };
+static const char *fltermcmd[] = { "st", "-t", "flterm", "-g", "120x40", NULL };
+static const char *flcalccmd[] = { "st", "-t", "flcalc", "-g", "120x40", "-e", "bc", NULL };
 
 // All commands sendded to sxhdrc for organization
 static Key keys[1]; /* {
@@ -168,6 +171,18 @@ tagall(const Arg *arg)
 	tag(&((Arg){.ui = ~0}));
 }
 
+void
+togglefltermcmd(const Arg *arg)
+{
+  togglescratch(&((Arg){.v = fltermcmd}), floatnames[0]);
+}
+
+void
+toggleflcalccmd(const Arg *arg)
+{
+  togglescratch(&((Arg){.v = flcalccmd}), floatnames[1]);
+}
+
 /* signal definitions */
 /* signum must be greater than 0 */
 /* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
@@ -196,5 +211,7 @@ static Signal signals[] = {
 	{ "setlayout",      setlayout },
 	{ "setlayoutex",    setlayoutex },
   { "setgaps",        setgaps },
+  { "tgflterm",       togglefltermcmd},
+  { "tgflcalc",       toggleflcalccmd},
 };
 
