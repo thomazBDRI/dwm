@@ -13,7 +13,6 @@ Patches applied
 - [ru gaps](https://dwm.suckless.org/patches/ru_gaps/)
 - [centeredmaster](https://dwm.suckless.org/patches/centeredmaster/)
 - [pertag](https://dwm.suckless.org/patches/pertag/)
-- [fakefullscreen](https://dwm.suckless.org/patches/fakefullscreen/)
 - [focusonctive](https://dwm.suckless.org/patches/focusonnetactive/)
 
 
