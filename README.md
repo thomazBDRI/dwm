@@ -14,13 +14,13 @@ Patches applied
 - [centeredmaster](https://dwm.suckless.org/patches/centeredmaster/)
 - [pertag](https://dwm.suckless.org/patches/pertag/)
 - [focusonctive](https://dwm.suckless.org/patches/focusonnetactive/)
+- [emoji](https://github.com/LukeSmithxyz/dwm/commit/1ded83fb3d14909b1fa7a015f48b86c947cf9658)
 
 
 Personal Patches
 ===============
 
 - Updated install path to install in `${USERBIN}` and `${USERMAN}`
-- Make font size `14` instead of `10`
 - Moved all comands to `sxhkd`
 
 
